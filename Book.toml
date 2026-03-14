@@ -1,0 +1,216 @@
+# Ignorance Must Take Form — Book-system configuration
+# Single source of truth for title, thesis, structure, and build.
+
+title = "Ignorance Must Take Form"
+subtitle = "From the Infinitesimal to the Cosmos, from Silicon to User"
+slug = "ignorance-must-take-form"
+version = "0.1.0"
+status = "draft"
+language = "en"
+license = "all-rights-reserved"
+
+[authors]
+primary = ["Dan Voulez"]
+
+[identity]
+kind = "book-system"
+thesis = "A trustworthy system is one that gives form to what it does not yet know before the pressure to continue forces it to pretend."
+principle = "Ignorance must take form."
+tagline = "A single governed form across scales."
+
+[epigraph]
+quote = "The supreme goal of all theory is to make the irreducible basic elements as simple and as few as possible without having to surrender the adequate representation of a single datum of experience."
+author = "Albert Einstein"
+year = "1933"
+after = "We owe it to Einstein to keep looking for the simplest form that does not break when reality changes scale."
+
+[entrypoints]
+readme = "README.md"
+abstract = "book/ABSTRACT.md"
+preface = "book/PREFACE.md"
+index = "book/INDEX.md"
+introduction = "book/00_front_matter/introduction.md"
+
+[targets]
+default = "book"
+enabled = ["book", "manifesto", "spec", "paper", "website"]
+
+[outputs.book]
+enabled = true
+root = "book/"
+index = "book/INDEX.md"
+
+[outputs.manifesto]
+enabled = true
+root = "book/16_the_manifesto/"
+
+[outputs.spec]
+enabled = true
+root = "spec/"
+
+[outputs.paper]
+enabled = true
+root = "docs/one_page_thesis.md"
+
+[outputs.website]
+enabled = false
+root = "site/"
+
+[canonical_cell]
+fields = [
+  "who",
+  "did",
+  "this",
+  "when",
+  "confirmed_by",
+  "if_ok",
+  "if_doubt",
+  "if_not",
+  "status"
+]
+claim = "The canonical cell is the minimum accountable form of a governed transition."
+
+[core_concepts]
+required = [
+  "canonical_cell",
+  "intrinsic_causality",
+  "confirmation",
+  "branching_futures",
+  "doubt",
+  "ghost_records",
+  "proof_carrying_inference",
+  "continuous_verifier",
+  "ghost_load",
+  "ghost_debt",
+  "closure",
+  "closure_fraud",
+  "epistemic_router",
+  "unified_stack"
+]
+
+[ghosts]
+types = [
+  "entity_ghost",
+  "evidence_ghost",
+  "causal_ghost",
+  "linkage_ghost"
+]
+claim = "Ghosts are placeholders with identity for what the system cannot yet affirm but no longer has the right to ignore."
+
+[invariants.local]
+items = [
+  "goal_preservation",
+  "provenance_closure",
+  "contradiction_budget",
+  "semantic_drift_bound",
+  "recoverability"
+]
+
+[invariants.global]
+items = [
+  "no_unauthorized_collapse",
+  "no_critical_unresolved_dependency_at_closure",
+  "only_admissible_continuations",
+  "doubt_must_be_routed",
+  "closure_requires_right"
+]
+
+[epistemic_states]
+items = ["ok", "doubt", "not"]
+
+[stack]
+floors = [
+  "semantic_form",
+  "deterministic_materialization",
+  "protocol_of_action",
+  "epistemic_governance"
+]
+
+[stack.components]
+semantic_form = ["canonical_cell", "tdln", "semantic_isa"]
+deterministic_materialization = ["deterministic_gate", "content_hash", "check_boundary"]
+protocol_of_action = ["logline", "ledger", "policy", "consent", "ghost_of_action"]
+epistemic_governance = ["manager_plane", "ghost_engine", "continuous_verifier", "closure_guard", "epistemic_router"]
+
+[dependencies.intellectual]
+primary = [
+  "LogLine",
+  "Chip as Code",
+  "What Runs Above Software",
+  "Einstein 1933"
+]
+
+[dependencies.research]
+secondary = [
+  "formal_methods",
+  "non_monotonic_reasoning",
+  "uncertainty_in_llms",
+  "process_supervision",
+  "verification"
+]
+
+[build]
+strict_order = true
+front_matter_first = true
+include_appendices = true
+allow_partial_compilation = true
+
+[build.order]
+sequence = [
+  "00_front_matter",
+  "01_the_search_for_form",
+  "02_causality_collapse_and_doubt",
+  "03_the_computational_scientific_method",
+  "04_the_epistemic_crisis_of_generative_systems",
+  "05_ghost_records",
+  "06_governed_reasoning",
+  "07_debt_fraud_and_the_right_to_continue",
+  "08_the_protocol_of_action",
+  "09_from_semantics_to_bytes",
+  "10_what_runs_above_software",
+  "11_the_unified_stack",
+  "12_the_mathematical_core",
+  "13_building_the_system",
+  "14_evaluation",
+  "15_the_philosophical_consequence",
+  "16_the_manifesto",
+  "appendices"
+]
+
+[style]
+tone = "rigorous-literary"
+citations = "inline-or-endnote"
+diagrams = true
+tables = true
+glossary_required = true
+terminology_is_canonical = true
+
+[repository]
+book_root = "book/"
+docs_root = "docs/"
+spec_root = "spec/"
+formal_root = "formal/"
+experiments_root = "experiments/"
+src_root = "src/"
+assets_root = "assets/"
+refs_root = "refs/"
+
+[status]
+north_star = "defined"
+introduction = "drafted"
+book_index = "defined"
+book_abstract = "drafted"
+monorepo_layout = "defined"
+formal_core = "not_started"
+manager_plane_v2 = "not_started"
+software_prototype = "not_started"
+
+[questions]
+open = [
+  "What is the minimal formal definition of an epistemic state?",
+  "When does a ghost become critical?",
+  "How should ghost debt be computed in practice?",
+  "What exactly constitutes closure fraud under different stakes?",
+  "Which invariants are hard requirements and which are tunable budgets?",
+  "How should the LLM proposer interface with ghost spawning?"
+]
