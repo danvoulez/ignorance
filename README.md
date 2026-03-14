@@ -173,6 +173,7 @@ Recommended starting points:
 - **spec/unified_stack_spec.md** — four-floor architecture
 - **spec/manager_plane_v2_spec.md** — typed control plane
 - **TASKS.md** — execution plan and phased tasks
+- **prompts/** — prompt templates: strict mode (specs, formal, glossary), creative mode (book, scenarios, proposals); see `prompts/README.md`
 
 ---
 
