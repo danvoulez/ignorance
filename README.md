@@ -158,6 +158,7 @@ It defines:
 
 Recommended starting points:
 
+- **PROMPT_ENTRYPOINT.md** — bootloader for high-capability model sessions (read this first if you are a model)
 - **README.md** — project overview
 - **Book.toml** — canonical identity and structure
 - **book/ABSTRACT.md** — short statement of the whole work
