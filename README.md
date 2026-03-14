@@ -168,6 +168,11 @@ Recommended starting points:
 - **docs/north_star.md** — research direction
 - **spec/canonical_cell_spec.md** — first formal atom
 - **spec/ghost_record_spec.md** — structured absence as object
+- **spec/continuous_verifier_spec.md** — trajectory-level verification
+- **spec/closure_fraud_spec.md** — illegitimate closure
+- **spec/unified_stack_spec.md** — four-floor architecture
+- **spec/manager_plane_v2_spec.md** — typed control plane
+- **TASKS.md** — execution plan and phased tasks
 
 ---
 

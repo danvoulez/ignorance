@@ -20,7 +20,11 @@ If you are a high-capability model asked to work here, read and apply the follow
 9. `spec/epistemic_state_spec.md`
 10. `spec/continuous_verifier_spec.md`
 11. `spec/closure_fraud_spec.md`
-12. relevant downstream specs for the task
+12. `spec/unified_stack_spec.md`
+13. `spec/manager_plane_v2_spec.md`
+14. relevant downstream specs for the task
+
+For execution plan and phased work, see **`TASKS.md`**.
 
 Do not skip `Book.toml`.
 
