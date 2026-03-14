@@ -4,192 +4,179 @@
 **Status:** Draft  
 **Authority:** `Book.toml`  
 **Layer:** Epistemic Governance  
-**Depends on:** `docs/glossary.md`, `spec/epistemic_state_spec.md`, `spec/continuous_verifier_spec.md`, `spec/ghost_record_spec.md`, `spec/unified_stack_spec.md`
+**Depends on:** `Book.toml`, `docs/glossary.md`, `docs/non_negotiables.md`, `spec/epistemic_state_spec.md`, `spec/ghost_record_spec.md`, `spec/continuous_verifier_spec.md`, `spec/closure_fraud_spec.md`, `spec/unified_stack_spec.md`
 
 ---
 
-## 1. Purpose
+## 1. Objetivo
 
-This document defines the **Manager Plane v2** as the typed, non-chat, event-driven control plane responsible for dispatching tasks, routing epistemic outcomes, and coordinating the ghost engine, verifier, and closure guard.
+Este documento define o **Manager Plane v2** como plano de controle **não-chat**, **tipado** e **dirigido a eventos** do andar de governança epistêmica.
 
-The Manager Plane is not a conversational interface. It is a governed layer that consumes events, produces receipts and witnesses, and issues typed actions.
-
----
-
-## 2. Claim
-
-A trustworthy system requires a control plane that:
-
-- is typed (structured actions, not freeform text),
-- is event-driven (reactive to state and verification outcomes),
-- is replayable (events and receipts support audit),
-- and allocates power correctly (propose, verify, execute, conclude are distinct roles).
-
-The Manager Plane v2 is that control plane.
+Seu papel é coordenar transições entre estados epistêmicos sem violar o cânone: preservar ausência estruturada (Ghost Records), submeter continuidade ao Continuous Verifier, rotear regimes epistêmicos (ok/doubt/not) e impedir fechamento ilegítimo via Closure Guard.
 
 ---
 
-## 3. Scope
+## 2. Fronteira do componente
 
-The Manager Plane is responsible for:
+O Manager Plane v2:
 
-- receiving and emitting **events**,
-- issuing and tracking **receipts**,
-- coordinating **witnesses** where required,
-- dispatching typed **actions** to the ghost engine, verifier, closure guard, and workers,
-- and ensuring that continuation and closure follow epistemic governance.
+- **coordena** decisões de continuidade;
+- **despacha** ações tipadas para componentes especializados;
+- **registra** eventos, recibos e evidências de governança;
+- **não substitui** Verifier, Router, Ghost Engine ou Closure Guard.
 
-The Manager Plane is not:
+O Manager Plane v2 **não é**:
 
-- a chat interface,
-- a natural-language command layer,
-- or the LLM proposer itself.
-
----
-
-## 4. Events, Receipts, Witnesses
-
-### 4.1 Events
-
-**Events** are structured records of something that occurred or was requested in the system.
-
-An event MUST carry at least:
-
-- event identifier,
-- type or kind,
-- timestamp or sequence,
-- source (e.g. proposer, verifier, user),
-- payload (reference to cell, state, ghost, or action).
-
-Events are the primary input to the Manager Plane.
-
-### 4.2 Receipts
-
-**Receipts** are structured acknowledgments or outcomes produced by the Manager Plane or its delegates.
-
-A receipt MUST carry at least:
-
-- receipt identifier,
-- reference to the event or request it answers,
-- outcome (e.g. admitted, blocked, routed_to_doubt),
-- reference to any new state, ghost, or obligation.
-
-Receipts support audit and replay.
-
-### 4.3 Witnesses
-
-**Witnesses** are attestations from external or authoritative sources (human, system, document) that support or refute a claim or transition.
-
-The Manager Plane MAY request witnesses and MUST record when a witness is required, provided, or missing.
+- interface conversacional;
+- LLM soberano;
+- engine de inferência textual livre.
 
 ---
 
-## 5. Typed Action Algebra
+## 3. CÂNON (normativo neste repositório)
 
-The Manager Plane MUST operate over a typed set of actions. The following are canonical candidates (per open_questions and introduction):
+Esta seção consolida o que já está fixado no cânone e deve ser tratado como obrigatório para implementações conformantes.
 
-- **Delegate** — hand off to a worker or subsystem under constraints
-- **RequestEvidence** — request evidence or document; may spawn evidence ghost
-- **SpawnGhost** — create a Ghost Record (via ghost engine)
-- **ResolveGhost** — attempt or record resolution of a ghost (via ghost engine)
-- **EscalateGhost** — escalate a ghost (e.g. to human or policy)
-- **AdvancePointer** — advance the current position in a branch or workflow (subject to closure check where applicable)
-- **BlockClosure** — block closure for the current case/branch/answer
-- **Terminate** — terminate a branch or case without closure
+### 3.1 Forma canônica e continuidade
 
-Implementations MAY extend this set but MUST NOT collapse distinct actions (e.g. SpawnGhost vs ResolveGhost) into one.
+1. Raciocínio é governado como **transição entre estados epistêmicos**, não como geração de texto.  
+2. O estado epistêmico inclui, no mínimo: claims, evidence, obligations, ghosts, provenance, branches, status e budgets.  
+3. Ghost Record é objeto de primeira classe (não null, não TODO), com identidade, origem, obrigações e ciclo de vida.
 
-The **minimal action algebra** is still an open question; this spec fixes the canonical candidates, not the minimal set.
+### 3.2 Governança contínua
 
----
+4. O **Continuous Verifier** julga admissibilidade de transições de forma contínua e pode retornar `admit`, `admit_with_doubt`, `repair_required`, `escalate`, `reject`, `closure_blocked`.  
+5. Continuidade e fechamento são direitos distintos: transição pode ser admissível sem ser elegível para closure.
 
-## 6. Relationship to Epistemic Router
+### 3.3 Regimes epistêmicos e roteamento
 
-The **Epistemic Router** decides the regime of continuation at each junction: **ok**, **doubt**, or **not**.
+6. O regime epistêmico canônico é `{ok, doubt, not}`; `doubt` é primeira classe e não pode ser colapsado em `not`.  
+7. O **Epistemic Router** existe para decidir o regime de continuidade e deve ser respeitado pelo Manager Plane.
 
-The Manager Plane MAY:
+### 3.4 Fechamento e fraude de fechamento
 
-- embed the epistemic router,
-- consume the router’s decisions to choose which action to dispatch,
-- or own routing and delegate verification to the Continuous Verifier.
+8. Closure é ato governado (não mero “output emitido”).  
+9. Closure deve ser bloqueado quando houver ausência crítica não resolvida/dispensada/escalada.  
+10. Concluir apesar de dependência crítica não resolvida caracteriza **Closure Fraud**.
 
-The boundary between Manager Plane and Epistemic Router MUST be clearly defined in any implementation. This spec does not fix a single ownership model; it requires that the relationship be explicit.
+### 3.5 Pilha unificada e alocação de poder
 
----
-
-## 7. Relationship to Continuous Verifier
-
-The Manager Plane MUST NOT bypass the Continuous Verifier.
-
-- Before advancing pointer or allowing closure, the Manager Plane (or a dedicated component) MUST consult the verifier where required by policy.
-- Verifier outcomes (`admit`, `admit_with_doubt`, `closure_blocked`, etc.) MUST drive Manager Plane behavior.
-- The Manager Plane does not replace the verifier; it coordinates with it.
+11. O Manager Plane vive no 4º andar (epistemic governance) e coordena, sem colapsar papéis dos outros componentes.  
+12. LLM pode propor; não pode autorizar sozinho continuidade, supressão de dúvida, apagamento de ghost ou fechamento.
 
 ---
 
-## 8. Relationship to Ghost Engine
+## 4. Contrato operacional do Manager Plane v2 (PROPOSTA desta spec)
 
-The Manager Plane dispatches Ghost-related actions to the **Ghost Engine**.
+> Esta seção é proposta de contrato explícito para implementação. Ela **não cria ontologia paralela**: apenas operacionaliza termos já canônicos.
 
-- SpawnGhost, ResolveGhost, EscalateGhost are executed by the Ghost Engine under Manager Plane instruction or policy.
-- The Manager Plane does not implement ghost lifecycle itself; it issues typed actions and receives receipts.
+### 4.1 Entradas tipadas
+
+O Manager Plane v2 recebe:
+
+- `event` (fato/solicitação estruturada);
+- `state_ref` (referência ao Epistemic State corrente);
+- `intent` (objetivo operacional da transição);
+- `policy_context` (regras e limites aplicáveis).
+
+### 4.2 Saídas tipadas
+
+O Manager Plane v2 emite:
+
+- `action` (comando estruturado para componente-alvo);
+- `receipt` (resultado governável e auditável);
+- `witness_request` (quando testemunho externo é exigido);
+- `routing_decision` (`ok`/`doubt`/`not`) quando a decisão estiver sob sua responsabilidade de orquestração.
+
+### 4.3 Álgebra mínima de ações (proposta inicial)
+
+Ações canônicas suportadas:
+
+- `Delegate`
+- `RequestEvidence`
+- `SpawnGhost`
+- `ResolveGhost`
+- `EscalateGhost`
+- `AdvancePointer`
+- `BlockClosure`
+- `Terminate`
+
+Regra de alinhamento canônico:
+
+- `SpawnGhost`/`ResolveGhost`/`EscalateGhost` operam sobre **Ghost Record** (não sobre entidade alternativa);
+- `AdvancePointer` é condicionado por verificação de admissibilidade;
+- `BlockClosure` é obrigatório quando houver `closure_blocked` ou dependência crítica em aberto.
+
+### 4.4 Protocolo de decisão (proposta)
+
+Para cada evento:
+
+1. Carregar `x_t` (estado epistêmico atual).  
+2. Identificar transição proposta `T`.  
+3. Consultar Epistemic Router para regime (`ok`/`doubt`/`not`) quando aplicável.  
+4. Submeter `T` ao Continuous Verifier.  
+5. Se decisão for `closure_blocked`, emitir `BlockClosure` e registrar obrigações.  
+6. Se decisão for `admit_with_doubt`, preservar ghosts/obrigações e seguir em regime `doubt`.  
+7. Se decisão for `escalate`, emitir ação de escalonamento e registrar pendência explícita.  
+8. Só permitir fechamento quando precondições de closure estiverem satisfeitas.
+
+### 4.5 Invariantes do Manager Plane v2 (propostos)
+
+- **I1 — Sem bypass de verificação:** nenhuma transição governada avança sem caminho de decisão verificável.
+- **I2 — Sem apagamento silencioso:** ghost ativo não desaparece sem operação explícita de ciclo de vida.
+- **I3 — Dúvida preservada:** `doubt` não é reclassificado para `ok` sem evidência/justificativa registrada.
+- **I4 — Fechamento governado:** toda tentativa de closure passa por guardas de legitimidade.
+- **I5 — Rastreabilidade:** todo efeito de governança produz receipt vinculável a evento e estado.
 
 ---
 
-## 9. Relationship to Closure Guard
+## 5. Alinhamento explícito entre componentes (sem ontologia paralela)
 
-The **Closure Guard** determines whether closure is legitimate.
+### 5.1 Manager Plane ↔ Epistemic State
 
-The Manager Plane MUST ensure that:
+- Manager Plane não “inventa estado alternativo”; opera sobre o Epistemic State canônico e seus campos normativos.
 
-- closure attempts are evaluated by the closure guard (or equivalent logic),
-- closure is blocked when the guard returns block,
-- and BlockClosure is issued when the system must not conclude despite operational ability to emit output.
+### 5.2 Manager Plane ↔ Ghost Records
 
----
+- Ghost Records permanecem no estado e no ciclo de vida definido em `ghost_record_spec`; Manager Plane apenas orquestra ações sobre eles.
 
-## 10. Non-Chat Requirement
+### 5.3 Manager Plane ↔ Continuous Verifier
 
-The Manager Plane v2 is **non-chat**.
+- Verifier decide admissibilidade; Manager Plane decide despacho de ação com base nessa decisão.
 
-Control decisions MUST be represented as:
+### 5.4 Manager Plane ↔ Epistemic Router
 
-- typed events,
-- typed actions,
-- structured receipts,
-- and explicit state transitions,
+- Router define regime epistêmico da continuidade; Manager Plane aplica esse regime ao fluxo operacional.
 
-not as natural-language turns or unstructured prompts.
+### 5.5 Manager Plane ↔ Closure Guard
 
-This does not forbid a chat interface elsewhere in the system; it forbids the Manager Plane from being driven primarily by conversational input.
+- Closure Guard mantém autoridade para bloquear fechamento; Manager Plane deve honrar bloqueio e registrar consequência operacional.
 
 ---
 
-## 11. Conformance
+## 6. Questões em aberto (não normativas)
 
-A system conforms to this specification only if it:
-
-1. implements a control plane that is typed and event-driven,
-2. uses events, receipts, and witnesses as defined,
-3. supports at least the canonical action set (or a documented subset),
-4. defines the relationship between Manager Plane, Epistemic Router, Verifier, Ghost Engine, and Closure Guard,
-5. does not use chat as the primary control interface for the Manager Plane,
-6. and ensures that verification and closure guard are not bypassed.
+1. **Fronteira Router/Manager:** Router embutido no Manager ou componente separado obrigatório?  
+2. **Granularidade de `AdvancePointer`:** toda progressão exige verificação completa ou há classes de avanço leve?  
+3. **Álgebra mínima final:** os oito verbos propostos são realmente primitivos ou parte é açúcar sintático?  
+4. **Witnesses:** quando testemunho externo é obrigatório por política versus apenas recomendável?  
+5. **Cadência de verificação:** custo/latência aceitos para verificação contínua em cenários de alto volume?  
+6. **Crítica de ghost para closure:** qual critério computável mínimo para classificar criticalidade em produção?
 
 ---
 
-## 12. Non-Goals
+## 7. Critérios de conformidade
 
-This specification does not define:
+Uma implementação está conforme esta spec se, no mínimo:
 
-- the exact wire format of events and receipts,
-- the implementation of the Epistemic Router,
-- or the policy language for when to escalate or block.
-
-Those belong to downstream specs or implementation.
+1. mantém o Manager Plane como camada não-chat e tipada;
+2. opera sobre Epistemic State, Ghost Records, Router, Verifier e Closure Guard sem redefinir seus conceitos;
+3. impede bypass de verificação e de bloqueio de closure;
+4. preserva `doubt` como regime explícito;
+5. garante trilha auditável (`event` → `decision` → `action` → `receipt`).
 
 ---
 
-## 13. Summary
+## 8. Resumo
 
-The Manager Plane v2 is the typed, event-driven, non-chat control plane that coordinates the governance layer: events in, receipts out, typed actions to ghost engine, verifier, and closure guard. It exists so that the system can be controlled and audited without relying on natural language as the primary control mechanism.
+O Manager Plane v2 é a orquestração de governança epistêmica: ele coordena transições, mas não usurpa autoridade dos componentes canônicos. Esta spec separa claramente **cânone** (o que já vale), **proposta** (contrato operacional implementável) e **questões em aberto** (o que ainda precisa pesquisa), mantendo uma única ontologia em todo o repositório.
