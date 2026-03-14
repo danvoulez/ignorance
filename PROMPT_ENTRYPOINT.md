@@ -18,7 +18,9 @@ If you are a high-capability model asked to work here, read and apply the follow
 7. `spec/canonical_cell_spec.md`
 8. `spec/ghost_record_spec.md`
 9. `spec/epistemic_state_spec.md`
-10. relevant downstream specs for the task
+10. `spec/continuous_verifier_spec.md`
+11. `spec/closure_fraud_spec.md`
+12. relevant downstream specs for the task
 
 Do not skip `Book.toml`.
 
